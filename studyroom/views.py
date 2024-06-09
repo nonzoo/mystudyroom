@@ -93,6 +93,14 @@ def userProfile(request,pk):
 
 
 
+@login_required(login_url='login')
+def updateUser(request):
+
+    return render(request, 'studyroom/edit-user.html')
+
+
+
+
 def homeView(request):
     q =  request.GET.get('q') if request.GET.get('q') != None else ''
     rooms = Room.objects.filter(
@@ -131,6 +139,7 @@ def roomView(request,pk):
 
 @login_required(login_url='login')
 def create_room(request):
+    page = 'create'
     form = RoomForm()
     topics = Topic.objects.all()
     if request.method == 'POST':
@@ -145,13 +154,14 @@ def create_room(request):
         )
 
         return redirect('home')
-    context = {'form':form,'topics':topics}
+    context = {'form':form,'topics':topics,'page':page}
     return render(request, 'studyroom/room_form.html', context)
 
 
 
 @login_required(login_url='login')
 def update_room(request, pk):
+    page='update'
     room = Room.objects.get(id=pk)
     form = RoomForm(instance= room)
     topics = Topic.objects.all()
@@ -169,7 +179,7 @@ def update_room(request, pk):
         room.save()
         return redirect('home')
         
-    context={'form':form,'topics':topics,'room':room}
+    context={'form':form,'topics':topics,'room':room,'page':page}
 
     return render (request, 'studyroom/room_form.html', context  )
 

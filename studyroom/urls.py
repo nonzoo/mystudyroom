@@ -6,6 +6,7 @@ urlpatterns = [
     path('logout/',v.logoutUser, name='logout'),
     path('signup/',v.signupView,name='signup'),
     path('profile/<str:pk>/',v.userProfile,name='profile'),
+    path('edit-user/',v.updateUser,name='edituser'),
 
     path('',v.homeView,name='home'),
     path('room/<str:pk>/', v.roomView, name='room'),

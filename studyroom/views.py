@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Room, Topic, Message
-from .forms import RoomForm,MessageForm
+from .forms import RoomForm,UserForm,MessageForm
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -95,8 +95,17 @@ def userProfile(request,pk):
 
 @login_required(login_url='login')
 def updateUser(request):
+    user = request.user
+    form = UserForm(instance=user)
+    
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile',pk=user.id)
 
-    return render(request, 'studyroom/edit-user.html')
+    context={'form':form}   
+    return render(request, 'studyroom/edit-user.html', context)
 
 
 
@@ -144,7 +153,7 @@ def create_room(request):
     topics = Topic.objects.all()
     if request.method == 'POST':
         topic_name = request.POST.get('topic')
-        topic, created = Topic.objects.get_or_create(name=topic_name)#get or create a new topic
+        topic, created = Topic.objects.get_or_create(name=topic_name) #get or create a new topic
 
         Room.objects.create(
             host= request.user,

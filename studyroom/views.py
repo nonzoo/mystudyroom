@@ -1,14 +1,13 @@
 from django.shortcuts import render, redirect
-from .models import Room, Topic, Message
-from .forms import RoomForm,UserForm,MessageForm
+from .models import Room, Topic, Message,User
+from .forms import RoomForm,UserForm,MessageForm,CustomUser
 from django.db.models import Q
-from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.contrib.auth.forms import UserCreationForm
 
+from random import shuffle
 
 
 
@@ -21,18 +20,18 @@ def loginUser(request):
         
 
     if request.method == 'POST': #if the user enter their information and login
-        username = request.POST.get('username') and request.POST.get('username').lower() #get the username
+        email = request.POST.get('email') and request.POST.get('email').lower() #get the username
         password = request.POST.get('password') # get the password
 
         #check if the user exits
         try:
-            user = User.objects.get(username = username)
+            user = User.objects.get(email=email)
 
         except:
             messages.error(request, 'User does not exit')
 
         #authenticate the user 
-        user = authenticate(request, username=username, password= password)
+        user = authenticate(request, email=email, password=password)
 
         if user is not None:
             login(request, user) #logs the user in
@@ -57,11 +56,11 @@ def signupView(request):
         messages.error(request, "Logout first")
         return redirect('home')
     
-    form = UserCreationForm()
+    form = CustomUser()
     page = 'signup'
     
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUser(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -99,7 +98,7 @@ def updateUser(request):
     form = UserForm(instance=user)
     
     if request.method == 'POST':
-        form = UserForm(request.POST, instance=user)
+        form = UserForm(request.POST,  request.FILES, instance=user)
         if form.is_valid():
             form.save()
             return redirect('profile',pk=user.id)
@@ -117,9 +116,8 @@ def homeView(request):
         Q(name__icontains=q)|
         Q(description__icontains=q)
         )
-
-    topics = Topic.objects.all()
     count=rooms.count()
+    topics = Topic.objects.all()[0:5]
     room_activity = Message.objects.filter(Q(room__topic__name__icontains=q))
 
     context = {'rooms':rooms, 'topics':topics,'count':count, 'room_activity':room_activity}
@@ -237,3 +235,17 @@ def delete_message (request, pk):
         room_message.delete()
         return redirect('room',pk=room_message.room.id)
     return render(request, 'studyroom/delete.html', {'obj':room_message})
+
+
+def topicpage(request):
+    q =  request.GET.get('q') if request.GET.get('q') != None else ''
+    topics = Topic.objects.filter(name__icontains=q)
+    context = {'topics':topics}
+    return render (request, 'studyroom/topics.html', context)
+
+def activitypage(request):
+    room = Room.objects.all()
+    topics = Topic.objects.all()
+    room_activity = Message.objects.all()
+    context={'room':room,'topics':topics,'room_activity':room_activity}
+    return render(request, 'studyroom/activity.html',context)

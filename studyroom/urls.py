@@ -10,6 +10,8 @@ urlpatterns = [
 
     path('',v.homeView,name='home'),
     path('room/<str:pk>/', v.roomView, name='room'),
+    path('browsetopic',v.topicpage,name='browsetopic'),
+    path('activities', v.activitypage, name='activities'),
 
     path('create-room', v.create_room, name = 'create-room'),
     path('update-room/<str:pk>/', v.update_room, name = 'update-room'),

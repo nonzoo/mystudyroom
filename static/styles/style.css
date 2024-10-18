@@ -187,10 +187,11 @@ a {
 
 .avatar.avatar--large img {
   display: block;
-  width: 8rem;
-  height: 8rem;
+  width: 10rem;
+  height: 10rem;
   border-radius: 50%;
 }
+
 
 .avatar.avatar--large:after {
   width: 1rem;
@@ -198,6 +199,7 @@ a {
   bottom: 2px;
   right: 3.5px;
 }
+
 
 .scroll::-webkit-scrollbar {
   width: 0.6rem;

@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-biwbf8l7j64=o)^ugb0$6#g=7t*+&=ch&gj4(4-8!2q84fd9*$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'studyroom.User'
 
